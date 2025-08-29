@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Testing
+.tox
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.log
+.pytest_cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Database
+*.sqlite
+*.db
+instance/
+
+# Build and deployment
+build/
+dist/
+*.egg-info/
+.webassets-cache
+
+# Logs and debugging
+*.log
+debug_*.py
+test_*.py
+
+# Railway deployment files
+.railway-*
+
+# Temporary files
+*.tmp
+*.temp
+*~
+
+# Migration backups
+migrations/versions/*.py.bak
