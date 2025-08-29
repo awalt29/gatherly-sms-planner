@@ -34,7 +34,14 @@ def create_app(config_name=None):
     # Add health check endpoint
     @app.route('/health')
     def health_check():
-        return {'status': 'healthy', 'message': 'Gatherly is running'}, 200
+        try:
+            # Test database connection
+            with app.app_context():
+                result = db.session.execute(db.text('SELECT 1'))
+                db.session.commit()
+            return {'status': 'healthy', 'message': 'Gatherly is running', 'database': 'connected'}, 200
+        except Exception as e:
+            return {'status': 'unhealthy', 'message': f'Database error: {str(e)}'}, 503
     
     @app.route('/api')
     def api_info():
