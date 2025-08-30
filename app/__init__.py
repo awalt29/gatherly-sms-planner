@@ -67,7 +67,14 @@ def create_app(config_name=None):
         return {'message': 'Gatherly API', 'version': '2.0', 'status': 'active'}, 200
     
     # Import models to ensure they're registered with SQLAlchemy
-    with app.app_context():
-        from app.models import planner, event, guest, guest_state, contact, availability
+    try:
+        with app.app_context():
+            from app.models import planner, event, guest, guest_state, contact, availability
+            # Initialize database tables if they don't exist
+            db.create_all()
+            print("✅ Models imported and database tables initialized")
+    except Exception as e:
+        print(f"⚠️  Model/Database initialization warning: {e}")
+        # Continue anyway - the app can still start
     
     return app
