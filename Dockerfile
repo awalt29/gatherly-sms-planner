@@ -4,11 +4,14 @@ FROM python:3.12-slim
 # Set working directory
 WORKDIR /app
 
-# Create a simple test server
-RUN echo 'from http.server import HTTPServer, BaseHTTPRequestHandler\nimport json\n\nclass Handler(BaseHTTPRequestHandler):\n    def do_GET(self):\n        if self.path == "/":\n            response = {"message": "SUCCESS! Railway working!", "status": "healthy"}\n        elif self.path == "/health":\n            response = {"status": "healthy", "message": "Health check OK"}\n        else:\n            response = {"error": "Not found"}\n        self.send_response(200)\n        self.send_header("Content-Type", "application/json")\n        self.end_headers()\n        self.wfile.write(json.dumps(response).encode())\n\nprint("Starting server on port 8000...")\nHTTPServer(("0.0.0.0", 8000), Handler).serve_forever()' > test_server.py
+# Install gunicorn (Railway seems to expect it)
+RUN pip install gunicorn
+
+# Create a simple Flask app that Railway can run with gunicorn
+RUN echo 'from flask import Flask\napp = Flask(__name__)\n\n@app.route("/")\ndef home():\n    return {"message": "SUCCESS! Railway working with Flask!", "status": "healthy"}\n\n@app.route("/health")\ndef health():\n    return {"status": "healthy", "message": "Health check OK"}\n\nif __name__ == "__main__":\n    app.run(host="0.0.0.0", port=8000)' > app.py
 
 # Expose port 8000
 EXPOSE 8000
 
-# Run the test server
-CMD python test_server.py
+# Let Railway use gunicorn (it seems to override CMD anyway)
+CMD gunicorn app:app --bind 0.0.0.0:8000 --workers 1
