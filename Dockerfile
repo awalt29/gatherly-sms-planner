@@ -20,11 +20,28 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-# Set environment variable for Railway
-ENV PORT=8000
-
-# Expose the port
+# Expose port 8000 (Railway should map this automatically)
 EXPOSE 8000
 
-# Run the ultra-minimal Python server
-CMD python ultra_minimal.py
+# Run the ultra-minimal Python server with hardcoded port
+CMD python3 -c "
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path == '/':
+            response = {'message': 'SUCCESS! Railway deployment working!', 'status': 'healthy'}
+        elif self.path == '/health':
+            response = {'status': 'healthy', 'message': 'Health check passed'}
+        else:
+            response = {'error': 'Not found', 'path': self.path}
+        
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/json')
+        self.end_headers()
+        self.wfile.write(json.dumps(response).encode())
+
+print('Starting server on port 8000...')
+HTTPServer(('0.0.0.0', 8000), Handler).serve_forever()
+"
