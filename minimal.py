@@ -5,6 +5,7 @@ Minimal test WSGI for Railway deployment debugging
 import os
 
 print("🚀 Starting minimal Flask app...")
+print(f"PORT environment variable: {os.environ.get('PORT', 'NOT SET')}")
 
 try:
     from flask import Flask
@@ -17,9 +18,14 @@ try:
     def hello():
         return {'message': 'Hello from Railway!', 'status': 'working'}, 200
     
+    @app.route('/health')
+    def health():
+        return {'status': 'healthy', 'message': 'Minimal app is running'}, 200
+    
     @app.route('/test')
     def test():
-        return {'message': 'Test endpoint working', 'environment': dict(os.environ)}, 200
+        env_vars = {k: v for k, v in os.environ.items() if not k.startswith('_')}
+        return {'message': 'Test endpoint working', 'environment': env_vars}, 200
     
     print("✅ Routes defined")
     print("🎯 Minimal app ready for Railway")
