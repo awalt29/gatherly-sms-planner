@@ -23,5 +23,5 @@ COPY . .
 # Expose port (Railway will override this with $PORT)
 EXPOSE 8000
 
-# Run the application with gunicorn
-CMD gunicorn minimal:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --log-level debug --access-logfile - --error-logfile -
+# Run the ultra-minimal Python server
+CMD python ultra_minimal.py
