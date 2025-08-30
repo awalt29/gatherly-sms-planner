@@ -31,6 +31,11 @@ def create_app(config_name=None):
     app.register_blueprint(sms_bp, url_prefix='/sms')
     app.register_blueprint(dashboard_bp)
     
+    # Add simple root endpoint
+    @app.route('/')
+    def root():
+        return {'message': 'Gatherly SMS Event Planner', 'version': '2.0', 'status': 'running'}, 200
+    
     # Add health check endpoint
     @app.route('/health')
     def health_check():
@@ -42,6 +47,20 @@ def create_app(config_name=None):
             return {'status': 'healthy', 'message': 'Gatherly is running', 'database': 'connected'}, 200
         except Exception as e:
             return {'status': 'unhealthy', 'message': f'Database error: {str(e)}'}, 503
+    
+    # Add simple status endpoint that doesn't require database
+    @app.route('/status')
+    def status_check():
+        import os
+        return {
+            'status': 'running',
+            'message': 'Gatherly app is running',
+            'env_vars': {
+                'DATABASE_URL': 'SET' if os.environ.get('DATABASE_URL') else 'MISSING',
+                'TWILIO_ACCOUNT_SID': 'SET' if os.environ.get('TWILIO_ACCOUNT_SID') else 'MISSING',
+                'PORT': os.environ.get('PORT', 'Not set')
+            }
+        }, 200
     
     @app.route('/api')
     def api_info():
