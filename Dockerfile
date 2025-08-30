@@ -20,7 +20,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application
 COPY . .
 
-# Expose port (Railway will override this with $PORT)
+# Set environment variable for Railway
+ENV PORT=8000
+
+# Expose the port
 EXPOSE 8000
 
 # Run the ultra-minimal Python server
