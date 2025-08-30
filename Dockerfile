@@ -24,4 +24,4 @@ COPY . .
 EXPOSE 8000
 
 # Run the application with gunicorn
-CMD gunicorn wsgi_simple:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --log-level info
+CMD gunicorn minimal:app --bind 0.0.0.0:$PORT --workers 1 --timeout 120 --log-level info
